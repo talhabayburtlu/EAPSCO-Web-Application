@@ -1,6 +1,9 @@
 import React from 'react';
-import {BrowserRouter, Route, Switch,} from "react-router-dom";
+import {Router, BrowserRouter, Route, Switch,} from "react-router-dom";
 import {Button, ButtonGroup, Grid} from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
+import Header from './Header';
+
 
 import Product from './components/product/product';
 import Generator from './components/product/generator';
@@ -15,18 +18,49 @@ import Service from "./components/service/service";
 import Supplier from "./components/supplier/supplier";
 import Material from "./components/materials/materials";
 
-const Action = ({handleLogout}) => {
+const useStyles = makeStyles((theme) => ({
+    root: {
+      "& > *": {
+        margin: theme.spacing(1),
+        width: theme.spacing(32),
+        height: theme.spacing(16)
+      }
+     
+    },
+    coloredPaper: {
+      backgroundColor: "primary",
+      border: 0,
+      borderRadius: 3,
+      boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .3)',
+      color: 'primary',
+      height: 480,
+      width: 1000,
+      padding: '0 30px',
+      flex: 1
+    },
+
+    gridBox: {
+        minHeight: 500,
+        
+
+    }
+  }));
+
+const Action = props => {
+    const classes = useStyles();
+
     return (
         <div>
             <section className="action">
-                <nav>
-                    <h2>
-                        Seri Bobinaj Ve Serbosan Energy and Power Systems
-                    </h2>
-                    <button onClick={handleLogout}>
-                        Logout
-                    </button>
-                </nav>
+            <Grid>
+                <BrowserRouter>
+                    <Header />
+                </BrowserRouter>
+                
+
+
+                
+            </Grid>
 
                 <Grid container justify="center" style={{marginTop: "10px"}}>
                     <Grid item xs={12} style={{margin: "20px 50px"}}>

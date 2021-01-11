@@ -2,6 +2,8 @@ import React, {useEffect, useState} from "react";
 import fire from "./fire";
 import './App.css';
 import Action from "./Action";
+import Procedures from "./Procedures";
+import { Router, Route, Switch } from "react-router-dom";
 
 
 function App() {
@@ -64,7 +66,7 @@ function App() {
 
   return (
       <div className="App">
-        {/*user ? (
+        {user ? (
             <Action handleLogout={handleLogout}/>
         ) : (
             <Login
@@ -77,8 +79,8 @@ function App() {
                 passwordError={passwordError}
                 hasAccount={hasAccount}
             />
-        )*/}
-        <Action/>
+        )}
+
       </div>
   );
 }
