@@ -1,10 +1,29 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
-import {Grid, Paper, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {
+    Button,
+    Grid,
+    Paper,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
+} from "@material-ui/core";
 
 
 const Employee = (props) => {
     let [rows, setRows] = useState(null)
+    const [id, setId] = useState("")
+    const [name, setName] = useState("")
+    const [surname, setSurname] = useState("")
+    const [mail, setMail] = useState("")
+    const [phoneNumber, setPhoneNumber] = useState("")
+    const [address, setAddress] = useState("")
+    const [birthdate, setBirthDate] = useState("")
+    const [salary, setSalary] = useState("")
 
     useEffect(async () => {
         rows = await rowValues()
@@ -31,9 +50,65 @@ const Employee = (props) => {
         return {id, name, surname, mail, phoneNumber, address, age, birthdate, salary}
     }
 
+    const handleCreate = async (event) => {
+        await axios({
+            method: "POST",
+            url: "/employees",
+            data: {name, surname, mail, phoneNumber, address, birthdate, salary}
+        })
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+    }
+
+    const handleUpdate = async (event) => {
+        await axios({
+            method: "PUT",
+            url: "/employees/" + id,
+            data: {name, surname, mail, phoneNumber, address, birthdate, salary}
+        })
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+    }
+
     return (
-        <Grid container justify="center" style={{}}>
+        <Grid container justify="center" style={{background: "#FFF"}}>
+            <Grid item xs={6} align="center">
+                <Typography variant="h5">Create a Employee</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)}/> <br/>
+                    <TextField label="Surname" value={surname} onChange={(event) => setSurname(event.target.value)}/>
+                    <br/>
+                    <TextField label="Mail" value={mail} onChange={(event) => setMail(event.target.value)}/> <br/>
+                    <TextField label="Phone Number" value={phoneNumber}
+                               onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
+                    <TextField label="Address" value={address} onChange={(event) => setAddress(event.target.value)}/>
+                    <br/>
+                    <TextField label="Birthdate" value={birthdate}
+                               onChange={(event) => setBirthDate(event.target.value)}/> <br/>
+                    <TextField label="Salary" value={salary} onChange={(event) => setSalary(event.target.value)}/> <br/>
+                    <Button onClick={handleCreate}>Create</Button>
+                </form>}
+            </Grid>
+            <Grid item xs={6} align="center">
+                <Typography variant="h5">Update a Employee</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
+                    <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)}/> <br/>
+                    <TextField label="Surname" value={surname} onChange={(event) => setSurname(event.target.value)}/>
+                    <br/>
+                    <TextField label="Mail" value={mail} onChange={(event) => setMail(event.target.value)}/> <br/>
+                    <TextField label="Phone Number" value={phoneNumber}
+                               onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
+                    <TextField label="Address" value={address} onChange={(event) => setAddress(event.target.value)}/>
+                    <br/>
+                    <TextField label="Birthdate" value={birthdate}
+                               onChange={(event) => setBirthDate(event.target.value)}/> <br/>
+                    <TextField label="Salary" value={salary} onChange={(event) => setSalary(event.target.value)}/> <br/>
+                    <Button onClick={handleUpdate}>Update</Button>
+                </form>}
+            </Grid>
             <Grid item xs={12} align="center">
+                <Typography variant="h5">All Employees </Typography>
                 <TableContainer component={Paper} style={{margin: "25px 0px"}}>
                     <TableHead>
                         <TableRow>

@@ -30,7 +30,7 @@ public class Product {
     @Column(name = "is_sold")
     private boolean isSold;
 
-    @Column(name = "type", insertable = false, updatable = false)
+    @Column(name = "type")
     private String type;
 
     @ManyToOne

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import fire from "./fire";
 import './App.css';
-import Login from "./Login";
 import Action from "./Action";
 
 
@@ -60,12 +59,12 @@ function App() {
   }
 
   useEffect(() => {
-    authListener();
+    // authListener();
   }, [])
 
   return (
       <div className="App">
-        {user ? (
+        {/*user ? (
             <Action handleLogout={handleLogout}/>
         ) : (
             <Login
@@ -78,7 +77,8 @@ function App() {
                 passwordError={passwordError}
                 hasAccount={hasAccount}
             />
-        )}
+        )*/}
+        <Action/>
       </div>
   );
 }

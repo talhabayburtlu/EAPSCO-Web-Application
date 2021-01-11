@@ -1,11 +1,28 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
-import {Grid, Paper, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {
+    Button,
+    Grid,
+    Paper,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
+} from "@material-ui/core";
 
 import ProductBar from "./productBar"
 
 const Motor = (props) => {
-    let [rows, setRows] = useState(null)
+    let [rows, setRows] = useState(null);
+    const [id, setId] = useState("");
+    const [price, setPrice] = useState("");
+    const [sold, setSold] = useState("");
+    const [mtype, setmType] = useState("");
+    const [power, setPower] = useState("");
+    const [rpm, setRpm] = useState("");
 
     useEffect(async () => {
         rows = await rowValues()
@@ -36,10 +53,47 @@ const Motor = (props) => {
         return {id, price, type, sold, mtype, power, rpm}
     }
 
+    const handleCreate = async (event) => {
+        await axios({method: "POST", url: "/motors", data: {type: "m", price, sold, mtype, power, rpm}})
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+    }
+
+    const handleUpdate = async (event) => {
+        await axios({method: "PUT", url: "/motors/" + id, data: {price: price, sold: sold, mtype, power, rpm}})
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+    }
+
     return (
-        <Grid container justify="center" style={{}}>
+        <Grid container justify="center" style={{background: "#FFF"}}>
             <ProductBar/>
+            <Grid item xs={6} align="center">
+                <Typography variant="h5">Create a Motor</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="Price" value={price} onChange={(event) => setPrice(event.target.value)}/> <br/>
+                    <TextField label="Sold" value={sold} onChange={(event) => setSold(event.target.value)}/> <br/>
+                    <TextField label="MType" value={mtype} onChange={(event) => setmType(event.target.value)}/> <br/>
+                    <TextField label="Power" value={power} onChange={(event) => setPower(event.target.value)}/> <br/>
+                    <TextField label="RPM" value={rpm} onChange={(event) => setRpm(event.target.value)}/> <br/>
+                    <Button onClick={handleCreate}>Create</Button>
+                </form>}
+
+            </Grid>
+            <Grid item xs={6} align="center">
+                <Typography variant="h5">Update a Motor</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
+                    <TextField label="Price" value={price} onChange={(event) => setPrice(event.target.value)}/> <br/>
+                    <TextField label="Sold" value={sold} onChange={(event) => setSold(event.target.value)}/> <br/>
+                    <TextField label="MType" value={mtype} onChange={(event) => setmType(event.target.value)}/> <br/>
+                    <TextField label="Power" value={power} onChange={(event) => setPower(event.target.value)}/> <br/>
+                    <TextField label="RPM" value={rpm} onChange={(event) => setRpm(event.target.value)}/> <br/>
+                    <Button onClick={handleUpdate}>Update</Button>
+                </form>}
+            </Grid>
             <Grid item xs={12} align="center">
+                <Typography variant="h5">All Motors</Typography>
                 <TableContainer component={Paper} style={{margin: "25px 0px"}}>
                     <TableHead>
                         <TableRow>

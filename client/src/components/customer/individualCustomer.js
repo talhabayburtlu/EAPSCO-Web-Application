@@ -1,11 +1,28 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
-import {Grid, Paper, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {
+    Button,
+    Grid,
+    Paper,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
+} from "@material-ui/core";
 
 import CustomerBar from "./customerBar"
 
 const IndividualCustomer = (props) => {
     let [rows, setRows] = useState(null)
+    const [id, setId] = useState("")
+    const [address, setAddress] = useState("")
+    const [phoneNumber, setPhoneNumber] = useState("")
+    const [name, setName] = useState("")
+    const [surname, setSurname] = useState("")
+
 
     useEffect(async () => {
         rows = await rowValues()
@@ -34,10 +51,54 @@ const IndividualCustomer = (props) => {
         return {id, address, phoneNumber, type, name, surname,}
     }
 
+    const handleCreate = async (event) => {
+        await axios({
+            method: "POST",
+            url: "/individualCustomers",
+            data: {type: "i", address, phoneNumber, name, surname}
+        })
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+    }
+
+    const handleUpdate = async (event) => {
+        await axios({method: "PUT", url: "/individualCustomers/" + id, data: {address, phoneNumber, name, surname}})
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err))
+    }
+
     return (
-        <Grid container justify="center" style={{}}>
+        <Grid container justify="center" style={{background: "#FFF"}}>
             <CustomerBar/>
+            <Grid item xs={6} align="center">
+                <Typography variant="h5">Create an Individual Customer</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="Address" value={address} onChange={(event) => setAddress(event.target.value)}/>
+                    <br/>
+                    <TextField label="Phone Number" value={phoneNumber}
+                               onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
+                    <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)}/> <br/>
+                    <TextField label="Surname" value={surname} onChange={(event) => setSurname(event.target.value)}/>
+                    <br/>
+                    <Button onClick={handleCreate}>Create</Button>
+                </form>}
+            </Grid>
+            <Grid item xs={6} align="center">
+                <Typography variant="h5">Update an Individual Customer</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
+                    <TextField label="Address" value={address} onChange={(event) => setAddress(event.target.value)}/>
+                    <br/>
+                    <TextField label="Phone Number" value={phoneNumber}
+                               onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
+                    <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)}/> <br/>
+                    <TextField label="Surname" value={surname} onChange={(event) => setSurname(event.target.value)}/>
+                    <br/>
+                    <Button onClick={handleUpdate}>Update</Button>
+                </form>}
+            </Grid>
             <Grid item xs={12} align="center">
+                <Typography variant="h5">All Individual Customers</Typography>
                 <TableContainer component={Paper} style={{margin: "25px 0px"}}>
                     <TableHead>
                         <TableRow>
