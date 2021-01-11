@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -13,10 +15,7 @@ import javax.persistence.*;
 @Table(name = "Individual_Customer")
 @NoArgsConstructor
 @AllArgsConstructor
-public class IndividualCustomer {
-
-    @Id
-    private int id;
+public class IndividualCustomer extends Customer {
 
     @Column(name = "name")
     private String name;
@@ -24,8 +23,4 @@ public class IndividualCustomer {
     @Column(name = "surname")
     private String surname;
 
-    @OneToOne
-    @JoinColumn(name = "customer_id")
-    @MapsId
-    private Customer customer;
 }
