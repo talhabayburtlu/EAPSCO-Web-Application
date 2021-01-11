@@ -3,6 +3,8 @@ import fire from "./fire";
 import './App.css';
 import Login from "./Login";
 import Action from "./Action";
+import Procedures from "./Procedures";
+import { Router, Route, Switch } from "react-router-dom";
 
 
 function App() {
@@ -79,6 +81,7 @@ function App() {
                 hasAccount={hasAccount}
             />
         )}
+    
       </div>
   );
 }
