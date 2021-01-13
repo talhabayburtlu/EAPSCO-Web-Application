@@ -32,14 +32,18 @@ const Generator = (props) => {
         let products;
         let data = []
 
-        await axios({method: "get", url: "/products"})
-            .then(res => products = res.data)
-            .catch(err => console.log(err))
+        try {
+            const res = await axios({method: "get", url: "/products"})
+            products = res.data
+        } catch (e) {
+            console.log(e)
+        }
 
-        products._embedded.generators.map(g => {
-            data.push(createData(g._links.self.href.split("/").pop(), g.price, g.type, g.sold ? "True" : "False", g.dimensions, g.fuelCapacity, g.power))
-        })
-
+        await Promise.all(products._embedded.generators.map(async g => {
+            const customerId = await getId("/products/" + g._links.self.href.split("/").pop() + "/customer")
+            const officeIds = await getIds("/products/" + g._links.self.href.split("/").pop() + "/offices", "offices")
+            data.push(createData(g._links.self.href.split("/").pop(), g.price, g.type, g.sold ? "True" : "False", g.dimensions, g.fuelCapacity, g.power, customerId, officeIds))
+        }))
 
         data.sort((a, b) => {
             return a.id - b.id
@@ -48,8 +52,34 @@ const Generator = (props) => {
         setRows(data)
     }
 
-    const createData = (id, price, type, sold, dimensions, fuelCapacity, power) => {
-        return {id, price, type, sold, dimensions, fuelCapacity, power}
+    const getId = async (href) => {
+        let id;
+        try {
+            const res = await axios({method: "GET", url: href})
+            id = res.data._links.self.href.split("/").pop()
+        } catch (e) {
+            id = " "
+        }
+
+        return id;
+    }
+
+    const getIds = async (href, partialUrl) => {
+        let ids = ""
+        try {
+            const res = await axios({method: "GET", url: href})
+            res.data._embedded[partialUrl].map((d => {
+                ids += d._links.self.href.split("/").pop() + " "
+            }))
+        } catch (e) {
+            ids = " "
+        }
+
+        return ids;
+    }
+
+    const createData = (id, price, type, sold, dimensions, fuelCapacity, power, customerId, officeIds) => {
+        return {id, price, type, sold, dimensions, fuelCapacity, power, customerId, officeIds}
     }
 
     const handleCreate = async (event) => {
@@ -82,7 +112,8 @@ const Generator = (props) => {
                     <TextField label="Fuel Capacity" value={fuelCapacity}
                                onChange={(event) => setFuelCapacity(event.target.value)}/> <br/>
                     <TextField label="Power" value={power} onChange={(event) => setPower(event.target.value)}/> <br/>
-                    <Button onClick={handleCreate}>Create</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleCreate}>Create</Button>
                 </form>}
 
             </Grid>
@@ -97,7 +128,8 @@ const Generator = (props) => {
                     <TextField label="Fuel Capacity" value={fuelCapacity}
                                onChange={(event) => setFuelCapacity(event.target.value)}/> <br/>
                     <TextField label="Power" value={power} onChange={(event) => setPower(event.target.value)}/> <br/>
-                    <Button onClick={handleUpdate}>Update</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleUpdate}>Update</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">
@@ -112,6 +144,8 @@ const Generator = (props) => {
                             <TableCell align="right">Dimensions</TableCell>
                             <TableCell align="right">Fuel Capacity</TableCell>
                             <TableCell align="right">Power</TableCell>
+                            <TableCell align="right">Customer ID</TableCell>
+                            <TableCell align="right">Office IDs</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -125,6 +159,8 @@ const Generator = (props) => {
                                     <TableCell>{row.dimensions}</TableCell>
                                     <TableCell>{row.fuelCapacity}</TableCell>
                                     <TableCell>{row.power}</TableCell>
+                                    <TableCell>{row.customerId}</TableCell>
+                                    <TableCell>{row.officeIds}</TableCell>
                                 </TableRow>
                             )
                         }) : null}

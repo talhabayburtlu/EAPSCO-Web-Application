@@ -75,7 +75,8 @@ const Enterprise = (props) => {
                                onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
                     <TextField label="Enterprise Name" value={enterpriseName}
                                onChange={(event) => setEnterpriseName(event.target.value)}/> <br/>
-                    <Button onClick={handleCreate}>Create</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleCreate}>Create</Button>
                 </form>}
             </Grid>
             <Grid item xs={6} align="center">
@@ -88,7 +89,8 @@ const Enterprise = (props) => {
                                onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
                     <TextField label="Enterprise Name" value={enterpriseName}
                                onChange={(event) => setEnterpriseName(event.target.value)}/> <br/>
-                    <Button onClick={handleUpdate}>Update</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleUpdate}>Update</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">

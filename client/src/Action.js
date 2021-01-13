@@ -1,7 +1,7 @@
 import React from 'react';
-import {Router, BrowserRouter, Route, Switch,} from "react-router-dom";
+import {BrowserRouter, Route, Switch,} from "react-router-dom";
 import {Button, ButtonGroup, Grid} from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Header from './Header';
 
 
@@ -56,10 +56,6 @@ const Action = props => {
                 <BrowserRouter>
                     <Header />
                 </BrowserRouter>
-                
-
-
-                
             </Grid>
 
                 <Grid container justify="center" style={{marginTop: "10px"}}>

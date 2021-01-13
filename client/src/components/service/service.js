@@ -29,21 +29,36 @@ const Service = (props) => {
         let services;
         let data = []
 
-        await axios({method: "get", url: "/services"})
-            .then(res => services = res.data)
-            .catch(err => console.log(err))
+        try {
+            const res = await axios({method: "get", url: "/services"})
+            services = res.data
+        } catch (e) {
+            console.log(e)
+        }
 
-        console.log(services)
-
-        services._embedded.services.map(g => {
-            data.push(createData(g._links.self.href.split("/").pop(), g.startDate, g.endDate, g.duration, g.cost))
-        })
+        await Promise.all(services._embedded.services.map(async g => {
+            const officeId = await getId("/services/" + g._links.self.href.split("/").pop() + "/office")
+            const customerId = await getId("/services/" + g._links.self.href.split("/").pop() + "/customer")
+            data.push(createData(g._links.self.href.split("/").pop(), g.startDate, g.endDate, g.duration, g.cost, customerId, officeId))
+        }))
 
         setRows(data)
     }
 
-    const createData = (id, startDate, endDate, duration, cost) => {
-        return {id, startDate, endDate, duration, cost}
+    const getId = async (href) => {
+        let id;
+        try {
+            const res = await axios({method: "GET", url: href})
+            id = res.data._links.self.href.split("/").pop()
+        } catch (e) {
+            id = " "
+        }
+
+        return id;
+    }
+
+    const createData = (id, startDate, endDate, duration, cost, customerId, officeId) => {
+        return {id, startDate, endDate, duration, cost, customerId, officeId}
     }
 
     const handleCreate = async (event) => {
@@ -65,7 +80,8 @@ const Service = (props) => {
                 {<form noValidate autoComplete="off">
                     <TextField label="Start Date" value={startDate}
                                onChange={(event) => setStartDate(event.target.value)}/> <br/>
-                    <Button onClick={handleCreate}>Create</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleCreate}>Create</Button>
                 </form>}
             </Grid>
             <Grid item xs={6} align="center">
@@ -77,7 +93,8 @@ const Service = (props) => {
                     <TextField label="EndDate" value={endDate} onChange={(event) => setEndDate(event.target.value)}/>
                     <br/>
                     <TextField label="Cost" value={cost} onChange={(event) => setCost(event.target.value)}/> <br/>
-                    <Button onClick={handleUpdate}>Update</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleUpdate}>Update</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">
@@ -90,6 +107,8 @@ const Service = (props) => {
                             <TableCell align="right">End Date</TableCell>
                             <TableCell align="right">Duration</TableCell>
                             <TableCell align="right">Cost</TableCell>
+                            <TableCell align="right">Customer ID</TableCell>
+                            <TableCell align="right">Office ID</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -101,6 +120,8 @@ const Service = (props) => {
                                     <TableCell>{row.endDate}</TableCell>
                                     <TableCell>{row.duration}</TableCell>
                                     <TableCell>{row.cost}</TableCell>
+                                    <TableCell>{row.customerId}</TableCell>
+                                    <TableCell>{row.officeId}</TableCell>
                                 </TableRow>
                             )
                         }) : null}

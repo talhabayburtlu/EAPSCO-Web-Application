@@ -33,21 +33,37 @@ const Employee = (props) => {
         let employees;
         let data = []
 
-        await axios({method: "get", url: "/employees"})
-            .then(res => employees = res.data)
-            .catch(err => console.log(err))
+        try {
+            const res = await axios({method: "get", url: "/employees"})
+            employees = res.data
+        } catch (e) {
+            console.log(e)
+        }
 
-        console.log(employees)
-
-        employees._embedded.employees.map(g => {
-            data.push(createData(g._links.self.href.split("/").pop(), g.name, g.surname, g.mail, g.phoneNumber, g.address, g.age, g.birthdate, g.salary))
-        })
+        await Promise.all(employees._embedded.employees.map(async g => {
+            const officeIds = await getIds("/employees/" + g._links.self.href.split("/").pop() + "/offices", "offices")
+            data.push(createData(g._links.self.href.split("/").pop(), g.name, g.surname, g.mail, g.phoneNumber, g.address, g.age, g.birthdate, g.salary, officeIds))
+        }))
 
         setRows(data)
     }
 
-    const createData = (id, name, surname, mail, phoneNumber, address, age, birthdate, salary) => {
-        return {id, name, surname, mail, phoneNumber, address, age, birthdate, salary}
+    const getIds = async (href, partialUrl) => {
+        let ids = ""
+        try {
+            const res = await axios({method: "GET", url: href})
+            res.data._embedded[partialUrl].map((d => {
+                ids += d._links.self.href.split("/").pop() + " "
+            }))
+        } catch (e) {
+            ids = " "
+        }
+
+        return ids;
+    }
+
+    const createData = (id, name, surname, mail, phoneNumber, address, age, birthdate, salary, officeIds) => {
+        return {id, name, surname, mail, phoneNumber, address, age, birthdate, salary, officeIds}
     }
 
     const handleCreate = async (event) => {
@@ -86,7 +102,8 @@ const Employee = (props) => {
                     <TextField label="Birthdate" value={birthdate}
                                onChange={(event) => setBirthDate(event.target.value)}/> <br/>
                     <TextField label="Salary" value={salary} onChange={(event) => setSalary(event.target.value)}/> <br/>
-                    <Button onClick={handleCreate}>Create</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleCreate}>Create</Button>
                 </form>}
             </Grid>
             <Grid item xs={6} align="center">
@@ -104,7 +121,8 @@ const Employee = (props) => {
                     <TextField label="Birthdate" value={birthdate}
                                onChange={(event) => setBirthDate(event.target.value)}/> <br/>
                     <TextField label="Salary" value={salary} onChange={(event) => setSalary(event.target.value)}/> <br/>
-                    <Button onClick={handleUpdate}>Update</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleUpdate}>Update</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">
@@ -121,6 +139,7 @@ const Employee = (props) => {
                             <TableCell align="right">Age</TableCell>
                             <TableCell align="right">Birthdate</TableCell>
                             <TableCell align="right">Salary</TableCell>
+                            <TableCell align="right">Office IDs</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -136,6 +155,7 @@ const Employee = (props) => {
                                     <TableCell>{row.age}</TableCell>
                                     <TableCell>{row.birthdate}</TableCell>
                                     <TableCell>{row.salary}</TableCell>
+                                    <TableCell>{row.officeIds}</TableCell>
                                 </TableRow>
                             )
                         }) : null}

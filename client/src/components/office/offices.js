@@ -28,21 +28,38 @@ const Office = (props) => {
         let offices;
         let data = []
 
-        await axios({method: "get", url: "/offices"})
-            .then(res => offices = res.data)
-            .catch(err => console.log(err))
+        try {
+            const res = await axios({method: "get", url: "/offices"})
+            offices = res.data
+        } catch (e) {
+            console.log(e)
+        }
 
-        console.log(offices)
 
-        offices._embedded.offices.map(g => {
-            data.push(createData(g._links.self.href.split("/").pop(), g.address, g.phoneNumber))
-        })
+        await Promise.all(offices._embedded.offices.map(async g => {
+            const materialDates = await getIds("/offices/" + g._links.self.href.split("/").pop() + "/materials", "materials")
+            data.push(createData(g._links.self.href.split("/").pop(), g.address, g.phoneNumber, materialDates))
+        }))
 
         setRows(data)
     }
 
-    const createData = (id, address, phoneNumber) => {
-        return {id, address, phoneNumber}
+    const getIds = async (href, partialUrl) => {
+        let ids = ""
+        try {
+            const res = await axios({method: "GET", url: href})
+            res.data._embedded[partialUrl].map((d => {
+                ids += d._links.self.href.split("/").pop() + ", "
+            }))
+        } catch (e) {
+            ids = " "
+        }
+
+        return ids;
+    }
+
+    const createData = (id, address, phoneNumber, materialDates) => {
+        return {id, address, phoneNumber, materialDates}
     }
 
     const handleCreate = async (event) => {
@@ -66,7 +83,8 @@ const Office = (props) => {
                     <br/>
                     <TextField label="PhoneNumber" value={phoneNumber}
                                onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
-                    <Button onClick={handleCreate}>Create</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleCreate}>Create</Button>
                 </form>}
             </Grid>
             <Grid item xs={6} align="center">
@@ -77,7 +95,8 @@ const Office = (props) => {
                     <br/>
                     <TextField label="PhoneNumber" value={phoneNumber}
                                onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
-                    <Button onClick={handleUpdate}>Update</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleUpdate}>Update</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">
@@ -88,6 +107,7 @@ const Office = (props) => {
                             <TableCell align="left">ID</TableCell>
                             <TableCell align="left">Address</TableCell>
                             <TableCell align="right">Phone Number</TableCell>
+                            <TableCell align="right">Material Dates</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -97,6 +117,7 @@ const Office = (props) => {
                                     <TableCell>{row.id}</TableCell>
                                     <TableCell>{row.address}</TableCell>
                                     <TableCell>{row.phoneNumber}</TableCell>
+                                    <TableCell>{row.materialDates}</TableCell>
                                 </TableRow>
                             )
                         }) : null}

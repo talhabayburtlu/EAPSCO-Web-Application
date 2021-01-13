@@ -15,11 +15,12 @@ const Customer = (props) => {
         let customers;
         let data = []
 
-        await axios({method: "get", url: "/customers"})
-            .then(res => customers = res.data)
-            .catch(err => console.log(err))
-
-        console.log(customers)
+        try {
+            const res = await axios({method: "get", url: "/customers"})
+            customers = res.data
+        } catch (e) {
+            console.log(e)
+        }
 
         customers._embedded.individualCustomers.map(g => {
             data.push(createData(g._links.self.href.split("/").pop(), g.address, g.phoneNumber, g.type))

@@ -32,15 +32,18 @@ const UPS = (props) => {
         let products;
         let data = []
 
-        await axios({method: "get", url: "/products"})
-            .then(res => products = res.data)
-            .catch(err => console.log(err))
+        try {
+            const res = await axios({method: "get", url: "/products"})
+            products = res.data
+        } catch (e) {
+            console.log(e)
+        }
 
-        console.log(products)
-
-        products._embedded.upses.map(g => {
-            data.push(createData(g._links.self.href.split("/").pop(), g.price, g.type, g.sold ? "True" : "False", g.capacity, g.dimensions, g.voltage))
-        })
+        await Promise.all(products._embedded.upses.map(async g => {
+            const customerId = await getId("/upses/" + g._links.self.href.split("/").pop() + "/customer")
+            const officeIds = await getIds("/upses/" + g._links.self.href.split("/").pop() + "/offices", "offices")
+            data.push(createData(g._links.self.href.split("/").pop(), g.price, g.type, g.sold ? "True" : "False", g.capacity, g.dimensions, g.voltage, customerId, officeIds))
+        }))
 
 
         data.sort((a, b) => {
@@ -50,8 +53,34 @@ const UPS = (props) => {
         setRows(data)
     }
 
-    const createData = (id, price, type, sold, capacity, dimensions, voltage) => {
-        return {id, price, type, sold, capacity, dimensions, voltage}
+    const getId = async (href) => {
+        let id;
+        try {
+            const res = await axios({method: "GET", url: href})
+            id = res.data._links.self.href.split("/").pop()
+        } catch (e) {
+            id = " "
+        }
+        return id;
+    }
+
+    const getIds = async (href, partialUrl) => {
+        let ids = ""
+        try {
+            const res = await axios({method: "GET", url: href})
+            res.data._embedded[partialUrl].map((d => {
+                ids += d._links.self.href.split("/").pop() + " "
+            }))
+        } catch (e) {
+            ids = " "
+        }
+
+        return ids;
+    }
+
+
+    const createData = (id, price, type, sold, capacity, dimensions, voltage, customerId, officeIds) => {
+        return {id, price, type, sold, capacity, dimensions, voltage, customerId, officeIds}
     }
 
     const handleCreate = async (event) => {
@@ -84,7 +113,8 @@ const UPS = (props) => {
                                onChange={(event) => setDimensions(event.target.value)}/> <br/>
                     <TextField label="Voltage" value={voltage} onChange={(event) => setVoltage(event.target.value)}/>
                     <br/>
-                    <Button onClick={handleCreate}>Create</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleCreate}>Create</Button>
                 </form>}
 
             </Grid>
@@ -100,7 +130,8 @@ const UPS = (props) => {
                                onChange={(event) => setDimensions(event.target.value)}/> <br/>
                     <TextField label="Voltage" value={voltage} onChange={(event) => setVoltage(event.target.value)}/>
                     <br/>
-                    <Button onClick={handleUpdate}>Update</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleUpdate}>Update</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">
@@ -115,6 +146,8 @@ const UPS = (props) => {
                             <TableCell align="right">Capacity</TableCell>
                             <TableCell align="right">Dimensions</TableCell>
                             <TableCell align="right">Voltage</TableCell>
+                            <TableCell align="right">Customer ID</TableCell>
+                            <TableCell align="right">Office IDS</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -128,6 +161,8 @@ const UPS = (props) => {
                                     <TableCell>{row.capacity}</TableCell>
                                     <TableCell>{row.dimensions}</TableCell>
                                     <TableCell>{row.voltage}</TableCell>
+                                    <TableCell>{row.customerId}</TableCell>
+                                    <TableCell>{row.officeIds}</TableCell>
                                 </TableRow>
                             )
                         }) : null}

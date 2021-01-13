@@ -80,7 +80,8 @@ const IndividualCustomer = (props) => {
                     <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)}/> <br/>
                     <TextField label="Surname" value={surname} onChange={(event) => setSurname(event.target.value)}/>
                     <br/>
-                    <Button onClick={handleCreate}>Create</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleCreate}>Create</Button>
                 </form>}
             </Grid>
             <Grid item xs={6} align="center">
@@ -94,7 +95,8 @@ const IndividualCustomer = (props) => {
                     <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)}/> <br/>
                     <TextField label="Surname" value={surname} onChange={(event) => setSurname(event.target.value)}/>
                     <br/>
-                    <Button onClick={handleUpdate}>Update</Button>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleUpdate}>Update</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">
