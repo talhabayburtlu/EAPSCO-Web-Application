@@ -3,6 +3,7 @@ import { AppBar, Button, Grid, Toolbar, Typography } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import Action from "./Action";
 import {Route, withRouter} from "react-router-dom";
+import fire from './fire';
 
 
 
@@ -62,7 +63,7 @@ const Header = props => {
                     </Grid>
                     <Grid item xs={1} />
                     <Grid item xs={1}>
-                        <Button   variant="contained" size="small" color="secondary" className={classes.margin}>
+                        <Button  onClick={() => fire.auth().signOut()} variant="contained" size="small" color="secondary" className={classes.margin}>
                         Logout
                         </Button>
                     </Grid>
