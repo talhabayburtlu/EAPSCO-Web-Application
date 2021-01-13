@@ -63,11 +63,20 @@ const Enterprise = (props) => {
             .catch((err) => console.log(err))
     }
 
+    const handleDelete = async (event) => {
+        try {
+            const res = await axios({method: "DELETE", url: "/enterprises/" + id})
+            console.log(res)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
         <Grid container justify="center" style={{background: "#FFF"}}>
             <CustomerBar/>
-            <Grid item xs={6} align="center">
-                <Typography variant="h5">Create an Individual Customer</Typography>
+            <Grid item xs={4} align="center">
+                <Typography variant="h5">Create an Enterpise</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="Address" value={address} onChange={(event) => setAddress(event.target.value)}/>
                     <br/>
@@ -79,8 +88,8 @@ const Enterprise = (props) => {
                             onClick={handleCreate}>Create</Button>
                 </form>}
             </Grid>
-            <Grid item xs={6} align="center">
-                <Typography variant="h5">Update an Individual Customer</Typography>
+            <Grid item xs={4} align="center">
+                <Typography variant="h5">Update an Enterpise</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
                     <TextField label="Address" value={address} onChange={(event) => setAddress(event.target.value)}/>
@@ -91,6 +100,14 @@ const Enterprise = (props) => {
                                onChange={(event) => setEnterpriseName(event.target.value)}/> <br/>
                     <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
                             onClick={handleUpdate}>Update</Button>
+                </form>}
+            </Grid>
+            <Grid item xs={4} align="center">
+                <Typography variant="h5">Delete an Enterpise</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleDelete}>Delete</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">

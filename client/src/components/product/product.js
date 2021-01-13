@@ -20,6 +20,7 @@ const Product = (props) => {
     const [id, setId] = useState("");
     const [price, setPrice] = useState("");
     const [sold, setSold] = useState("");
+    const [customerId, setcustomerId] = useState("");
 
     useEffect(() => {
         rows = rowValues()
@@ -64,8 +65,6 @@ const Product = (props) => {
             return a.id - b.id
         })
 
-        console.log(data)
-
         setRows(data)
     }
 
@@ -107,14 +106,35 @@ const Product = (props) => {
 
     const handleUpdate = async (event) => {
         await axios({method: "PUT", url: "/products/" + id, data: {price: price, sold: sold}})
-            .then((res) => console.log(res))
+            .then(async (res) => {
+                try {
+                    const resUp = await axios({
+                        method: "PUT",
+                        url: "/products/" + id + "/customer",
+                        data: {_links: {customer: {href: "/customers/" + customerId}}}
+                    })
+                    console.log(resUp)
+                } catch (e) {
+                    console.log(e)
+                }
+            })
             .catch((err) => console.log(err))
+    }
+
+    const handleDelete = async (event) => {
+        try {
+            const res = await axios({method: "DELETE", url: "/products/" + id})
+            console.log(res)
+        } catch (e) {
+            console.log(e)
+        }
+
     }
 
     return (
         <Grid container justify="center" style={{background: "#FFF"}}>
             <ProductBar/>
-            <Grid item xs={6} align="center">
+            <Grid item xs={4} align="center">
                 <Typography variant="h5">Create A Product (Type: Other)</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="Price" value={price} onChange={(event) => setPrice(event.target.value)}/> <br/>
@@ -124,14 +144,24 @@ const Product = (props) => {
                 </form>}
 
             </Grid>
-            <Grid item xs={6} align="center">
+            <Grid item xs={4} align="center">
                 <Typography variant="h5">Update A Product (Type: Other)</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
                     <TextField label="Price" value={price} onChange={(event) => setPrice(event.target.value)}/> <br/>
                     <TextField label="Sold" value={sold} onChange={(event) => setSold(event.target.value)}/> <br/>
+                    <TextField label="Customer ID" value={customerId}
+                               onChange={(event) => setcustomerId(event.target.value)}/> <br/>
                     <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
                             onClick={handleUpdate}>Update</Button>
+                </form>}
+            </Grid>
+            <Grid item xs={4} align="center">
+                <Typography variant="h5">Delete A Product (Type: Other)</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleDelete}>Delete</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">

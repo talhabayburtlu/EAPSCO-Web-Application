@@ -76,9 +76,18 @@ const Office = (props) => {
             .catch((err) => console.log(err))
     }
 
+    const handleDelete = async (event) => {
+        try {
+            const res = await axios({method: "DELETE", url: "/suppliers/" + id})
+            console.log(res)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
         <Grid container justify="center" style={{background: "#FFF"}}>
-            <Grid item xs={6} align="center">
+            <Grid item xs={4} align="center">
                 <Typography variant="h5">Create a Supplier</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)}/> <br/>
@@ -91,7 +100,7 @@ const Office = (props) => {
                             onClick={handleCreate}>Create</Button>
                 </form>}
             </Grid>
-            <Grid item xs={6} align="center">
+            <Grid item xs={4} align="center">
                 <Typography variant="h5">Update a Supplier</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
@@ -103,6 +112,14 @@ const Office = (props) => {
                                onChange={(event) => setPhoneNumber(event.target.value)}/> <br/>
                     <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
                             onClick={handleUpdate}>Update</Button>
+                </form>}
+            </Grid>
+            <Grid item xs={4} align="center">
+                <Typography variant="h5">Delete a Supplier</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleDelete}>Delete</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">

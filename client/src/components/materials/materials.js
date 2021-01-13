@@ -33,8 +33,6 @@ const Material = (props) => {
             .then(res => materials = res.data)
             .catch(err => console.log(err))
 
-        console.log(materials)
-
         materials._embedded.materials.map(g => {
             data.push(createData(g._links.self.href.split("/").pop(), g.type, g.amount, g.price))
         })
@@ -53,14 +51,24 @@ const Material = (props) => {
     }
 
     const handleUpdate = async (event) => {
-        await axios({method: "PUT", url: "/suppliers/" + id, data: {type, amount, price}})
+        await axios({method: "PUT", url: "/materials/" + id, data: {type, amount, price}})
             .then((res) => console.log(res))
             .catch((err) => console.log(err))
     }
 
+    const handleDelete = async (event) => {
+        try {
+            const res = await axios({method: "DELETE", url: "/materials/" + id})
+            console.log(res)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+
     return (
         <Grid container justify="center" style={{background: "#FFF"}}>
-            <Grid item xs={6} align="center">
+            <Grid item xs={4} align="center">
                 <Typography variant="h5">Create a Supplier</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="Type" value={type} onChange={(event) => setType(event.target.value)}/> <br/>
@@ -70,7 +78,7 @@ const Material = (props) => {
                             onClick={handleCreate}>Create</Button>
                 </form>}
             </Grid>
-            <Grid item xs={6} align="center">
+            <Grid item xs={4} align="center">
                 <Typography variant="h5">Update a Supplier</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
@@ -79,6 +87,14 @@ const Material = (props) => {
                     <TextField label="Price" value={price} onChange={(event) => setPrice(event.target.value)}/> <br/>
                     <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
                             onClick={handleUpdate}>Update</Button>
+                </form>}
+            </Grid>
+            <Grid item xs={4} align="center">
+                <Typography variant="h5">Delete A Supplier/</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleDelete}>Delete</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">

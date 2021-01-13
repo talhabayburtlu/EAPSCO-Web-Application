@@ -23,6 +23,7 @@ const Generator = (props) => {
     const [dimensions, setDimensions] = useState("");
     const [fuelCapacity, setFuelCapacity] = useState("");
     const [power, setPower] = useState("");
+    const [customerId, setcustomerId] = useState("");
 
     useEffect(async () => {
         rows = await rowValues()
@@ -94,15 +95,35 @@ const Generator = (props) => {
 
     const handleUpdate = async (event) => {
         await axios({method: "PUT", url: "/generators/" + id, data: {price, sold, dimensions, fuelCapacity, power}})
-            .then((res) => console.log(res))
+            .then(async (res) => {
+                try {
+                    const resUp = await axios({
+                        method: "PUT",
+                        url: "/products/" + id + "/customer",
+                        data: {_links: {customer: {href: "/customers/" + customerId}}}
+                    })
+                    console.log(resUp)
+                } catch (e) {
+                    console.log(e)
+                }
+            })
             .catch((err) => console.log(err))
     }
 
 
+    const handleDelete = async (event) => {
+        try {
+            const res = await axios({method: "DELETE", url: "/generators/" + id})
+            console.log(res)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
         <Grid container justify="center" style={{background: "#FFF"}}>
             <ProductBar/>
-            <Grid item xs={6} align="center">
+            <Grid item xs={4} align="center">
                 <Typography variant="h5">Create A Generator</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="Price" value={price} onChange={(event) => setPrice(event.target.value)}/> <br/>
@@ -117,7 +138,7 @@ const Generator = (props) => {
                 </form>}
 
             </Grid>
-            <Grid item xs={6} align="center">
+            <Grid item xs={4} align="center">
                 <Typography variant="h5">Update A Generator</Typography>
                 {<form noValidate autoComplete="off">
                     <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
@@ -128,8 +149,18 @@ const Generator = (props) => {
                     <TextField label="Fuel Capacity" value={fuelCapacity}
                                onChange={(event) => setFuelCapacity(event.target.value)}/> <br/>
                     <TextField label="Power" value={power} onChange={(event) => setPower(event.target.value)}/> <br/>
+                    <TextField label="Customer ID" value={customerId}
+                               onChange={(event) => setcustomerId(event.target.value)}/> <br/>
                     <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
                             onClick={handleUpdate}>Update</Button>
+                </form>}
+            </Grid>
+            <Grid item xs={4} align="center">
+                <Typography variant="h5">Delete A Generator</Typography>
+                {<form noValidate autoComplete="off">
+                    <TextField label="ID" value={id} onChange={(event) => setId(event.target.value)}/> <br/>
+                    <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
+                            onClick={handleDelete}>Delete</Button>
                 </form>}
             </Grid>
             <Grid item xs={12} align="center">

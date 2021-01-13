@@ -20,6 +20,8 @@ const Service = (props) => {
     const [startDate, setStartDate] = useState("")
     const [endDate, setEndDate] = useState("")
     const [cost, setCost] = useState("")
+    const [customerId, setCustomerId] = useState("");
+    const [officeId, setOfficeId] = useState("");
 
     useEffect(async () => {
         rows = await rowValues()
@@ -69,7 +71,18 @@ const Service = (props) => {
 
     const handleUpdate = async (event) => {
         await axios({method: "PUT", url: "/services/" + id, data: {startDate, endDate, cost}})
-            .then((res) => console.log(res))
+            .then(async (res) => {
+                const resUp1 = await axios({
+                    method: "PUT",
+                    url: "/services/" + id + "/customer",
+                    data: {_links: {customer: {href: "/customers/" + customerId}}}
+                })
+                const resUp2 = await axios({
+                    method: "PUT",
+                    url: "/services/" + id + "/office",
+                    data: {_links: {office: {href: "/offices/" + officeId}}}
+                })
+            })
             .catch((err) => console.log(err))
     }
 
@@ -93,6 +106,10 @@ const Service = (props) => {
                     <TextField label="EndDate" value={endDate} onChange={(event) => setEndDate(event.target.value)}/>
                     <br/>
                     <TextField label="Cost" value={cost} onChange={(event) => setCost(event.target.value)}/> <br/>
+                    <TextField label="Customer ID" value={customerId}
+                               onChange={(event) => setCustomerId(event.target.value)}/> <br/>
+                    <TextField label="Office ID" value={officeId}
+                               onChange={(event) => setOfficeId(event.target.value)}/> <br/>
                     <Button color={'secondary'} variant="contained" style={{margin: "25px", width: "250px"}}
                             onClick={handleUpdate}>Update</Button>
                 </form>}
