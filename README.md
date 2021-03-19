@@ -1,4 +1,4 @@
-# EAPSCO-Web-Application (In Development)
+# EAPSCO-Web-Application 
 
 A web application created with **Spring Boot** for backend, **MsSql** database for storing information and **ReactJS** for frontend . The main idea of the 
 project is to handle CRUD operations on a website for an imaginary company called Energy And Power Systems Corporate Office.
@@ -12,7 +12,3 @@ There are products and some special products (generator, motor, UPS) which made 
 Products are created and stored inside offices (assume each office has a warehouse). There are multiple offices and multiple employees can work for a office. Also an employee can
 work for more than one office. Offices are giving services like fix or maintenance to customer's products. Also the products are created with materials that are supplied by suppliers.
 
-# Features to Add
-* There are views and store procedures inside our database. They are going to be placed in UI to interact with.
-* Security is handling by Firebase currently. It is possible to change it to Spring Security.
-* Necessary error checks needs to be done.
